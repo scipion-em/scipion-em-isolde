@@ -1,0 +1,10 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+
+# Ignore pycharm files
+.idea/
+
+# Ignore python files
+*.pyc
+
