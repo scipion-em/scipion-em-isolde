@@ -35,9 +35,9 @@ setup(
     packages=find_packages(),
     install_requires=[requirements],
     entry_points={
-        'pyworkflow.plugin': 'segger = segger'
+        'pyworkflow.plugin': 'isolde = isolde'
     },
     package_data={  # Optional
-       'segger': ['icon.png'],
+       'isolde': ['icon.png'],
     }
 )
