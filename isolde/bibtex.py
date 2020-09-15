@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # **************************************************************************
 # *
-# * Authors:     David Herreros Calero (dherreros@cnb.csic.es)
+# * Authors: Jorge Garcia Condado (jorgeschool@gmail.com)
 # *
 # * BCU, Centro Nacional de Biotecnologia, CSIC
 # *
