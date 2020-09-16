@@ -38,6 +38,13 @@ class Plugin(pwem.Plugin):
     @classmethod
     def defineBinaries(cls, env):
         """ Install ISOLDE with Chimerax toolshed command """
-        install_cmd = 'toolshed install isolde; exit'
-        args = '--nogui --cmd \'%s\' ' % install_cmd
-        chimera_plugin.runChimeraProgram(chimera_plugin.getProgram('ChimeraX'), args)
+        from scipion.install.funcs import \
+            VOID_TGZ  # Local import to avoid having scipion-app installed when building the package.
+
+        pathToChimera = chimera_plugin.getProgram()
+        installPluginsCommand = [("%s --nogui --exit " \
+                                "--cmd 'toolshed install isolde; exit'" % pathToChimera, [])]
+        env.addPackage('isolde', version='1.0',
+                       tar=VOID_TGZ,
+                       default=True,
+                       commands=installPluginsCommand)
