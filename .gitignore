@@ -8,3 +8,5 @@
 # Ignore python files
 *.pyc
 
+# Ignore Egg files
+*.egg-info
