@@ -28,8 +28,6 @@ import os
 
 import pwem
 
-# from scipion.install.funcs import VOID_TGZ
-
 from chimera import Plugin as chimera_plugin
 
 _logo = "icon.jpg"
@@ -39,4 +37,7 @@ class Plugin(pwem.Plugin):
 
     @classmethod
     def defineBinaries(cls, env):
-        pass
+        """ Install ISOLDE with Chimerax toolshed command """
+        install_cmd = 'toolshed install isolde; exit'
+        args = '--nogui --cmd \'%s\' ' % install_cmd
+        chimera_plugin.runChimeraProgram(chimera_plugin.getProgram('ChimeraX'), args)
