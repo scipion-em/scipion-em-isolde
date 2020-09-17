@@ -33,6 +33,8 @@ This module will provide the traditional Hello world example
 from pyworkflow.protocol.params import (PointerParam,
                                         BooleanParam)
 from pwem.protocols import EMProtocol
+from pwem.viewers.viewer_chimera import Chimera
+from chimera import Plugin as chimera
 
 class ProtIsolde(EMProtocol):
     """ Protocol to run ISOLDE within Chimera """
@@ -64,4 +66,26 @@ class ProtIsolde(EMProtocol):
                       default=True,
                       help="Automatically restrain ligands in simulation to"
                             " avoid them being sent away flying")
+
+    # --------------------------- INSERT steps functions ----------------------
+    def _insertAllSteps(self):
+        self._insertFunctionStep('runChimeraStep')
+        self._insertFunctionStep('createOutputStep')
+    # --------------------------- STEPS functions -----------------------------
+    def runChimeraStep(self):
+        self.writeChimeraScript()
+        args = '--script %s' % (self._getExtraPath('scriptChimera.py'))
+
+        Chimera.runProgram(chimera.getProgram(), args)
+
+    def createOutputStep(self):
+        pass
+
+    # --------------------------- UTILS functions ----------------------------
+    def writeChimeraScript(self):
+        f = open(self._getExtraPath('scriptChimera.py'), "w")
+        f.write("from chimerax.core.commands import run\n")
+        f.write("run(session, 'open %s')\n" % self.pdbFileToBeRefined.get().getFileName())
+        f.write("run(session, 'open %s')\n" % self.inputVolume.get().getFileName())
+        f.close()
 
