@@ -93,5 +93,7 @@ class ProtIsolde(EMProtocol):
             f.write("run(session, 'addh')\n")
         if self.hideHC:
             f.write("run(session, 'hide HC')\n")
+        if self.restrainLigands:
+            f.write("run(session, 'isolde restrain ligands #1')\n")
         f.close()
 
