@@ -87,5 +87,7 @@ class ProtIsolde(EMProtocol):
         f.write("from chimerax.core.commands import run\n")
         f.write("run(session, 'open %s')\n" % self.pdbFileToBeRefined.get().getFileName())
         f.write("run(session, 'open %s')\n" % self.inputVolume.get().getFileName())
+        f.write("run(session, 'clipper assoc #2 to #1')\n")
+        f.write("run(session, 'clipper assoc #2 to #1')\n")
         f.close()
 
