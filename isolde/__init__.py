@@ -24,8 +24,6 @@
 # *
 # **************************************************************************
 
-import os
-
 import pwem
 
 from chimera import Plugin as chimera_plugin
@@ -42,8 +40,8 @@ class Plugin(pwem.Plugin):
             VOID_TGZ  # Local import to avoid having scipion-app installed when building the package.
 
         pathToChimera = chimera_plugin.getProgram()
-        installPluginsCommand = [("%s --nogui --exit " \
-                                "--cmd 'toolshed install isolde; exit'" % pathToChimera, [])]
+        installPluginsCommand = [("%s --nogui --exit " 
+                                  "--cmd 'toolshed install isolde; exit'" % pathToChimera, [])]
         env.addPackage('isolde', version='1.0',
                        tar=VOID_TGZ,
                        default=True,
