@@ -89,5 +89,9 @@ class ProtIsolde(EMProtocol):
         f.write("run(session, 'open %s')\n" % self.inputVolume.get().getFileName())
         f.write("run(session, 'clipper assoc #2 to #1')\n")
         f.write("run(session, 'isolde start')\n")
+        if self.addH:
+            f.write("run(session, 'addh')\n")
+        if self.hideHC:
+            f.write("run(session, 'hide HC')\n")
         f.close()
 
