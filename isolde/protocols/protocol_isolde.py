@@ -30,11 +30,21 @@ Describe your python module here:
 This module will provide the traditional Hello world example
 """
 
+import os
+
+from chimera.constants import CHIMERA_CONFIG_FILE
+
 from pyworkflow.protocol.params import (PointerParam,
                                         BooleanParam)
 from pwem.protocols import EMProtocol
-from pwem.viewers.viewer_chimera import Chimera
+from pwem.viewers.viewer_chimera import (Chimera,
+                                         sessionFile,
+                                         chimeraMapTemplateFileName,
+                                         chimeraScriptFileName,
+                                         chimeraPdbTemplateFileName)
 from chimera import Plugin as chimera
+
+import configparser
 
 class ProtIsolde(EMProtocol):
     """ Protocol to run ISOLDE within Chimera """
@@ -74,19 +84,57 @@ class ProtIsolde(EMProtocol):
     # --------------------------- STEPS functions -----------------------------
     def runChimeraStep(self):
         self.writeChimeraScript()
-        args = '--script %s' % (self._getExtraPath('scriptChimera.py'))
+        args = '--script %s' % (os.path.abspath(self._getExtraPath('scriptChimera.py')))
 
-        Chimera.runProgram(chimera.getProgram(), args)
+        # Go to extra dir and save there the output of
+        # scipionwrite
+        #f.write('cd %s' % os.path.abspath(
+        #    self._getExtraPath()))
+        # save config file with information
+        # this is information is pased from scipion to chimerax
+        config = configparser.ConfigParser()
+        _chimeraPdbTemplateFileName = \
+            os.path.abspath(self._getExtraPath(
+                chimeraPdbTemplateFileName))
+        _chimeraMapTemplateFileName = \
+            os.path.abspath(self._getExtraPath(
+                chimeraMapTemplateFileName))
+        _sessionFile = os.path.abspath(
+            self._getExtraPath(sessionFile))
+        protId = self.getObjId()
+        config['chimerax'] = {'chimerapdbtemplatefilename':
+                                  _chimeraPdbTemplateFileName % protId,
+                              'chimeramaptemplatefilename':
+                                  _chimeraMapTemplateFileName % protId,
+                              'sessionfile': _sessionFile,
+                              'enablebundle': True,
+                              'protid': self.getObjId()}
+                              # set to True when
+                              # protocol finished
+                              # viewers will check this configuration file
+        with open(self._getExtraPath(CHIMERA_CONFIG_FILE),
+                  'w') as configfile:
+            config.write(configfile)
+
+        cwd = os.path.abspath(self._getExtraPath())
+        Chimera.runProgram(chimera.getProgram(), args, cwd=cwd)
 
     def createOutputStep(self):
-        pass
+        # upodate config file flag enablebundle
+        # so scipionwrite is disabled
+        config = configparser.ConfigParser()
+        config.read(self._getExtraPath(CHIMERA_CONFIG_FILE))
+        config.set('chimerax', 'enablebundle', 'False')
+        with open(self._getExtraPath(CHIMERA_CONFIG_FILE),
+                  'w') as configfile:
+            config.write(configfile)
 
     # --------------------------- UTILS functions ----------------------------
     def writeChimeraScript(self):
         f = open(self._getExtraPath('scriptChimera.py'), "w")
         f.write("from chimerax.core.commands import run\n")
-        f.write("run(session, 'open %s')\n" % self.pdbFileToBeRefined.get().getFileName())
-        f.write("run(session, 'open %s')\n" % self.inputVolume.get().getFileName())
+        f.write("run(session, 'open %s')\n" % os.path.abspath(self.pdbFileToBeRefined.get().getFileName()))
+        f.write("run(session, 'open %s')\n" % os.path.abspath(self.inputVolume.get().getFileName()))
         f.write("run(session, 'clipper assoc #2 to #1')\n")
         f.write("run(session, 'isolde start')\n")
         if self.addH:
@@ -96,4 +144,3 @@ class ProtIsolde(EMProtocol):
         if self.restrainLigands:
             f.write("run(session, 'isolde restrain ligands #1')\n")
         f.close()
-
