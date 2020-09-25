@@ -87,6 +87,13 @@ class ProtIsolde(EMProtocol):
                       default=True,
                       help="Automatically restrain ligands in simulation to"
                             " avoid them being sent away flying")
+        if doHelp:
+            form.addSection(label='Help')
+            form.addLine('''To save: scipionwrite [model #n] [prefix stringAddedToFilename]
+            Reference the pdb and map objects directly not the DataManager
+            Type 'help scipionwrite' in chimera command line for details''')
+
+        return form
 
     # --------------------------- INSERT steps functions ----------------------
     def _insertAllSteps(self):
