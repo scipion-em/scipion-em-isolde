@@ -205,6 +205,19 @@ class ProtIsolde(EMProtocol):
         f.close()
 
     # --------------------------- INFO functions ----------------------------
+    def _methods(self):
+        methodsMsgs = []
+        if self.getOutputsSize() >= 1:
+            directory = self._getExtraPath()
+            for filename in sorted(os.listdir(directory)):
+                if filename.endswith(".pdb") or filename.endswith(".cif"):
+                    methodsMsgs.append("PDB: %s was saved after simulation" % filename)
+                if filename.endswith(".mrc"):
+                    methodsMsgs.append("Map: %s was saved after simulation" % filename)
+        else:
+            methodsMsgs.append("Simulation running")
+        return methodsMsgs
+
     def _summary(self):
         summary = []
         summary.append("Input Volume provided: %s"
@@ -213,12 +226,10 @@ class ProtIsolde(EMProtocol):
                        % self.pdbFileToBeRefined.get().getFileName())
         if self.getOutputsSize() > 0:
             directory = self._getExtraPath()
-            counter = 1
             summary.append("Produced files:")
             for filename in sorted(os.listdir(directory)):
                 if filename.endswith(".pdb") or filename.endswith(".cif"):
                     summary.append("PDB: %s" % filename)
-            for filename in sorted(os.listdir(directory)):
                 if filename.endswith(".mrc"):
                     summary.append("Map: %s" % filename)
         else:
