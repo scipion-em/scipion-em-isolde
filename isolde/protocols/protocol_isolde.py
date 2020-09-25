@@ -34,9 +34,17 @@ import os
 
 from chimera.constants import CHIMERA_CONFIG_FILE
 
+try:
+    from pwem.objects import AtomStruct
+except ImportError:
+    from pwem.objects import PdbFile as AtomStruct
+
 from pyworkflow.protocol.params import (PointerParam,
                                         BooleanParam)
 from pwem.protocols import EMProtocol
+from pwem.objects import Volume
+from pwem.convert.headers import Ccp4Header
+from pwem.objects import Transform
 from pwem.viewers.viewer_chimera import (Chimera,
                                          sessionFile,
                                          chimeraMapTemplateFileName,
@@ -88,7 +96,7 @@ class ProtIsolde(EMProtocol):
 
         # Go to extra dir and save there the output of
         # scipionwrite
-        #f.write('cd %s' % os.path.abspath(
+        # f.write('cd %s' % os.path.abspath(
         #    self._getExtraPath()))
         # save config file with information
         # this is information is pased from scipion to chimerax
@@ -120,6 +128,40 @@ class ProtIsolde(EMProtocol):
         Chimera.runProgram(chimera.getProgram(), args, cwd=cwd)
 
     def createOutputStep(self):
+        """ Copy the PDB structure and register the output object.
+        """
+
+        # Check vol and pdb files
+        directory = self._getExtraPath()
+        for filename in sorted(os.listdir(directory)):
+            if filename.endswith(".mrc"):
+                volFileName = os.path.join(directory, filename)
+                vol = Volume()
+                vol.setFileName(volFileName)
+
+                # fix mrc header
+                ccp4header = Ccp4Header(volFileName, readHeader=True)
+                sampling = ccp4header.computeSampling()
+                origin = Transform()
+                shifts = ccp4header.getOrigin()
+                origin.setShiftsTuple(shifts)
+                vol.setOrigin(origin)
+                vol.setSamplingRate(sampling)
+                keyword = filename.split(".mrc")[0]
+                kwargs = {keyword: vol}
+                self._defineOutputs(**kwargs)
+
+            if filename.endswith(".pdb") or filename.endswith(".cif"):
+                path = os.path.join(directory, filename)
+                pdb = AtomStruct()
+                pdb.setFileName(path)
+                if filename.endswith(".cif"):
+                    keyword = filename.split(".cif")[0].replace(".","_")
+                else:
+                    keyword = filename.split(".pdb")[0].replace(".", "_")
+                kwargs = {keyword: pdb}
+                self._defineOutputs(**kwargs)
+
         # upodate config file flag enablebundle
         # so scipionwrite is disabled
         config = configparser.ConfigParser()
