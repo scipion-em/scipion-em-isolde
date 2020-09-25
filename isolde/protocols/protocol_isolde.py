@@ -40,6 +40,8 @@ except ImportError:
 
 from pyworkflow.protocol.params import (PointerParam,
                                         BooleanParam)
+from pyworkflow.utils.properties import Message
+
 from pwem.protocols import EMProtocol
 from pwem.objects import Volume
 from pwem.convert.headers import Ccp4Header
@@ -203,5 +205,25 @@ class ProtIsolde(EMProtocol):
         f.close()
 
     # --------------------------- INFO functions ----------------------------
+    def _summary(self):
+        summary = []
+        summary.append("Input Volume provided: %s"
+                       % self.inputVolume.get().getFileName())
+        summary.append("Input PDB provided: %s"
+                       % self.pdbFileToBeRefined.get().getFileName())
+        if self.getOutputsSize() > 0:
+            directory = self._getExtraPath()
+            counter = 1
+            summary.append("Produced files:")
+            for filename in sorted(os.listdir(directory)):
+                if filename.endswith(".pdb") or filename.endswith(".cif"):
+                    summary.append("PDB: %s" % filename)
+            for filename in sorted(os.listdir(directory)):
+                if filename.endswith(".mrc"):
+                    summary.append("Map: %s" % filename)
+        else:
+            summary.append(Message.TEXT_NO_OUTPUT_FILES)
+        return summary
+
     def _citations(self):
         return ['CROLL2018']
