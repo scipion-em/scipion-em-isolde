@@ -201,3 +201,7 @@ class ProtIsolde(EMProtocol):
         if self.restrainLigands:
             f.write("run(session, 'isolde restrain ligands #1')\n")
         f.close()
+
+    # --------------------------- INFO functions ----------------------------
+    def _citations(self):
+        return ['CROLL2018']
