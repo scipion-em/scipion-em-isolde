@@ -26,8 +26,7 @@
 
 
 """
-Describe your python module here:
-This module will provide the traditional Hello world example
+This module implements a protocol to run ISOLDE from Scipion.
 """
 
 import os
@@ -60,6 +59,10 @@ class ProtIsolde(EMProtocol):
 
     # --------------------------- DEFINE param functions --------------------
     def _defineParams(self, form, doHelp=True):
+        """ Define parts of form consisting mainly of two parts
+        1. Input volume and input atomic structure
+        2. Flags for simulation
+        """
         form.addSection(label='Input')
         form.addParam('inputVolume', PointerParam, pointerClass="Volume",
                       label='Input Volume', allowsNull=False,
@@ -91,6 +94,8 @@ class ProtIsolde(EMProtocol):
         self._insertFunctionStep('createOutputStep')
     # --------------------------- STEPS functions -----------------------------
     def runChimeraStep(self):
+        """ Run Chimera script to start simulation and enable scipionwrite
+        """
         self.writeChimeraScript()
         args = '--script %s' % (os.path.abspath(self._getExtraPath('scriptChimera.py')))
 
@@ -173,6 +178,9 @@ class ProtIsolde(EMProtocol):
 
     # --------------------------- UTILS functions ----------------------------
     def writeChimeraScript(self):
+        """ Builds script file to open the volume and pdb and associate them as
+        well as set some further parameters for the simulation.
+        """
         f = open(self._getExtraPath('scriptChimera.py'), "w")
         f.write("from chimerax.core.commands import run\n")
         f.write("run(session, 'open %s')\n" % os.path.abspath(self.pdbFileToBeRefined.get().getFileName()))
