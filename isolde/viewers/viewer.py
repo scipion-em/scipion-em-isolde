@@ -1,6 +1,6 @@
 # **************************************************************************
 # *
-# * Authors: Jorge Garcia Condado (jorgeschool@gmail.com)
+# * Authors: Jorge Garcia Condado (jgcondado@cnb.csic.es)
 # *
 # * Unidad de  Bioinformatica of Centro Nacional de Biotecnologia , CSIC
 # *
@@ -87,8 +87,8 @@ class IsoldeViewer(Viewer):
                 path = os.path.join(directory, filename)
                 f.write("open %s\n" % path)
 
-        if !_inputVolFlag:
-
+   #     if !_inputVolFlag:
+   #         pass
 
         f.close()
 

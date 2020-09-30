@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # **************************************************************************
 # *
-# * Authors: Jorge Garcia Condado (jorgeschool@gmail.com)
+# * Authors: Jorge Garcia Condado (jgcondado@cnb.csic.es)
 # *
 # * BCU, Centro Nacional de Biotecnologia, CSIC
 # *
