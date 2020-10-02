@@ -106,7 +106,7 @@ class ProtIsolde(EMProtocol):
         """ Run Chimera script to start simulation and enable scipionwrite
         """
         self.writeChimeraScript()
-        args = '--script %s' % (os.path.abspath(self._getExtraPath('scriptChimera.py')))
+        fnCmd = os.path.abspath(self._getExtraPath('chimera_script.cxc'))
 
         # Go to extra dir and save there the output of
         # scipionwrite
@@ -139,7 +139,7 @@ class ProtIsolde(EMProtocol):
             config.write(configfile)
 
         cwd = os.path.abspath(self._getExtraPath())
-        Chimera.runProgram(chimera.getProgram(), args, cwd=cwd)
+        Chimera.runProgram(chimera.getProgram(), fnCmd + "&", cwd=cwd)
 
     def createOutputStep(self):
         """ Copy the PDB structure and register the output object.
@@ -190,18 +190,17 @@ class ProtIsolde(EMProtocol):
         """ Builds script file to open the volume and pdb and associate them as
         well as set some further parameters for the simulation.
         """
-        f = open(self._getExtraPath('scriptChimera.py'), "w")
-        f.write("from chimerax.core.commands import run\n")
-        f.write("run(session, 'open %s')\n" % os.path.abspath(self.pdbFileToBeRefined.get().getFileName()))
-        f.write("run(session, 'open %s')\n" % os.path.abspath(self.inputVolume.get().getFileName()))
-        f.write("run(session, 'clipper assoc #2 to #1')\n")
-        f.write("run(session, 'isolde start')\n")
+        f = open(self._getExtraPath('chimera_script.cxc'), "w")
+        f.write("open %s \n" % os.path.abspath(self.pdbFileToBeRefined.get().getFileName()))
+        f.write("open %s\n" % os.path.abspath(self.inputVolume.get().getFileName()))
+        f.write("clipper assoc #2 to #1\n")
+        f.write("isolde start\n")
         if self.addH:
-            f.write("run(session, 'addh')\n")
+            f.write("addh\n")
         if self.hideHC:
-            f.write("run(session, 'hide HC')\n")
+            f.write("hide HC\n")
         if self.restrainLigands:
-            f.write("run(session, 'isolde restrain ligands #1')\n")
+            f.write("isolde restrain ligands #1\n")
         f.close()
 
     # --------------------------- INFO functions ----------------------------
