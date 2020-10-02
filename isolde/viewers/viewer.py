@@ -37,6 +37,8 @@ from pwem.viewers.viewer_chimera import (Chimera,
                                          sessionFile)
 from pyworkflow.viewer import DESKTOP_TKINTER, Viewer
 
+from chimera import Plugin as chimera
+
 
 class IsoldeViewer(Viewer):
     """ Visualize the output of protocols protocol_fit and protocol_operate """
@@ -51,7 +53,7 @@ class IsoldeViewer(Viewer):
         _inputPDBFlag = False
         directory = self.protocol._getExtraPath()
 
-        fnCmd = self.protocol._getTmpPath("chimera_output.cxc")
+        fnCmd = os.path.abspath(self.protocol._getTmpPath("chimera_output.cxc"))
         f = open(fnCmd, 'w')
         f.write('cd %s\n' % os.getcwd())
 
@@ -100,5 +102,5 @@ class IsoldeViewer(Viewer):
         f.close()
 
         # run in the background
-        Chimera.runProgram(Chimera.getProgram(), fnCmd + "&")
+        Chimera.runProgram(chimera.getProgram(), fnCmd + "&")
         return []
